@@ -36,12 +36,14 @@ ll query(int node, int left, int right, int qLeft, int qRight) // 구간에 대�
     {
         return 0;
     }
-    else if (qLeft <= left && right <= qRight) // 현재 노드의 구간이 쿼리 내부라면
+    else if (qLeft <= left && right <= qRight)
     {
-        int mid = (left + right) / 2;
-        return query(node * 2, left, mid, qLeft, qRight) +
-               query(node * 2 + 1, mid + 1, right, qLeft, qRight);
+        return tree[node];
     }
+
+    int mid = (left + right) / 2;
+    return query(node * 2, left, mid, qLeft, qRight) +
+           query(node * 2 + 1, mid + 1, right, qLeft, qRight);
 }
 
 void update(int node, int left, int right, int index, ll diff)

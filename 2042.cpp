@@ -39,6 +39,10 @@ ll query(int node, int left, int right, int qLeft, int qRight) // 구간에 대�
     }
     else if (qLeft <= left && right <= qRight) // 현재 노드의 구간이 쿼리 내부라면
     {
+        return tree[node];
+    }
+    else
+    {
         int mid = (left + right) / 2;
         return query(node * 2, left, mid, qLeft, qRight) +
                query(node * 2 + 1, mid + 1, right, qLeft, qRight);
@@ -57,23 +61,23 @@ void update(int node, int left, int right, int index, ll diff)
             update(node * 2 + 1, mid + 1, right, index, diff);
         }
     }
+    if (index < left || index > right)
+        return;
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
     cin >> n >> m >> k;
-    for (int i = 0; i < n; i++) // 대상 숫자
+
+    nums.push_back(0);
+    for (int i = 0; i < n; i++)
     {
-        int a;
-        cin >> a;
-        nums.push_back(a);
+        int data;
+        cin >> data;
+        nums.push_back(data);
     }
 
-    for (int i = 0; i < m + k; i++) // 명령
+    for (int i = 0; i < m + k; i++)
     {
         int a, b, c;
         cin >> a >> b >> c;
@@ -84,11 +88,29 @@ int main()
     while (s < n)
         s *= 2;
 
-    tree.resize(s * 2, 0);
-    makeTree(1, 0, s - 1);
+    tree.resize(s * 2);
 
-    for (int i = 0; i < tree.size(); i++)
-        cout << tree[i] << ' ';
+    makeTree(1, 1, s);
 
+    vector<ll> ans;
+    for (int i = 0; i < operations.size(); i++)
+    {
+        int a = operations[i].first, b = operations[i].second.first, c = operations[i].second.second;
+
+        if (a == 2) //query
+        {
+            ans.push_back(query(1, 1, s, b, c));
+        }
+        else // update
+        {
+            update(1, 1, s, b, c - nums[b]);
+            nums[b] = c;
+        }
+    }
+
+    for (int i = 0; i < ans.size(); i++)
+    {
+        cout << ans[i] << '\n';
+    }
     return 0;
 }
