@@ -43,19 +43,5 @@ int main()
             }
         }
     }
-
-    // for (int a_start = 0; a_start < n; a_start++)
-    // {
-    //     for (int a_end = a_start; a_end < n; a_end++)
-    //     {
-    //         for (int b_start = 0; b_start < m; b_start++)
-    //         {
-    //             for (int b_end = 0; b_end < m; b_end++)
-    //             {
-
-    //             }
-    //         }
-    //     }
-    // }
     return 0;
 }
