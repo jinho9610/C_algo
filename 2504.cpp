@@ -9,132 +9,64 @@ using namespace std;
 
 typedef long long ll;
 
-class Element
-{
-public:
-    bool type;
-    int value;
-    char command;
-
-    Element(int value)
-    {
-        this->type = true;
-        this->value = value;
-    }
-    Element(char command)
-    {
-        this->type = false;
-        this->command = command;
-    }
-};
-
 string str;
-stack<Element> s;
+stack<char> s;
 ll result;
 
 int main()
 {
-    cin >> str;
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+
+    int tmp = 1;
+    bool impossible = false;
+    cin>>str;
+
     for (int i = 0; i < str.size(); i++)
     {
-        char command = str[i];
-        if (command == '(' || command == '[')
+        if (str[i] == '(')
         {
-            s.push(Element(command));
+            tmp *= 2;
+            s.push('(');
         }
-        else if (command == ')')
+        else if (str[i] == '[')
         {
-            int sum = 0;
-            bool isInvalid = true;
-            while (!s.empty())
-            {
-                Element element = s.top();
-                s.pop();
-                if (element.type) // 들어있던게 숫자라면
-                {
-                    sum += element.value;
-                }
-                else if (element.command == '(')
-                {
-                    if (sum == 0) // 숫자가 스택에 존재하지 않는 경우
-                    {
-                        s.push(Element(2));
-                    }
-                    else
-                    {
-                        s.push(Element(2 * sum));
-                    }
-                    isInvalid = false;
-                    break;
-                }
-                else
-                {
-                    isInvalid = true;
-                    break;
-                }
-            }
-            if (isInvalid)
-            {
-                cout << 0 << endl;
-                return 0;
-            }
+            tmp *= 3;
+            s.push('[');
         }
-        // [ ] 구현
-        else if (command == ']')
-        {
-            int sum = 0;
-            bool isInvalid = true;
-            while (!s.empty())
-            {
-                Element element = s.top();
-                s.pop();
-                if (element.type) // 들어있던게 숫자라면
-                {
-                    sum += element.value;
-                }
-                else if (element.command == '[')
-                {
-                    if (sum == 0) // 숫자가 스택에 존재하지 않는 경우
-                    {
-                        s.push(Element(3));
-                    }
-                    else
-                    {
-                        s.push(Element(3 * sum));
-                    }
-                    isInvalid = false;
-                    break;
-                }
-                else
-                {
-                    isInvalid = true;
-                    break;
-                }
-            }
-            if (isInvalid)
-            {
-                cout << 0 << endl;
-                return 0;
-            }
-        }
-    }
 
-    int result = 0;
-
-    while (!s.empty())
-    {
-        if (s.top().type)
+        else if (str[i] == ')' && (s.empty() || s.top() != '('))
         {
-            result += s.top().value;
+            impossible = true;
+            break;
+        }
+        else if (str[i] == ']' && (s.empty() || s.top() != '['))
+        {
+            impossible = true;
+            break;
+        }
+        else if (str[i] == ')')
+        {
+            if (str[i - 1] == '(')
+                result += tmp;
             s.pop();
+            tmp /= 2;
+        }
+        else if (str[i] == ']')
+        {
+            if (str[i - 1] == '[')
+                result += tmp;
+            s.pop();
+            tmp /= 3;
         }
     }
-
-    if (!s.empty())
-        cout << 0 << endl;
-
+    if (impossible || !s.empty())
+        cout << 0 << '\n';
     else
-        cout << result << endl;
+    {
+        cout << result << '\n';
+    }
 
     return 0;
 }

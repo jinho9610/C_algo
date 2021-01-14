@@ -1,9 +1,11 @@
 {
     "files.associations": {
+        "*.html": "html",
         "ostream": "cpp",
         "utility": "cpp",
         "iostream": "cpp",
         "vector": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "xstring": "cpp"
     }
 }
