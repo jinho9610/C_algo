@@ -12,187 +12,105 @@ using namespace std;
 
 typedef long long ll;
 
-struct TrieNode
+int w, b;
+vector<string> dict;
+char board[5][5];
+int visited[5][5];
+int dx[8] = {1, 0, 0, -1, -1, 1, 1, -1};
+int dy[8] = {0, 1, -1, 0, -1, 1, -1, 1};
+
+int found[300005];
+int max_score;
+int max_len;
+int max_idx;
+int word_cnt;
+
+void dfs(int word, int idx, int x, int y)
 {
-    TrieNode *children[26];
-    bool isEnd;
-    bool isHit;
-    TrieNode()
+    visited[x][y] = 1;
+    idx++;
+    if (dict[word].length() == idx && found[word] == 0) // 목적 달성했는지
     {
-        isEnd = false;
-        for (int i = 0; i < 26; i++)
-            children[i] = NULL;
-    }
-    TrieNode *getChild(char c) // 자식 노드 정보 가져오기
-    {
-        return children[c - 'A'];
-    }
+        found[word] = -1; // 찾으면 -1로 표시
 
-    void clearHit()
-    {
-        isHit = false;
-        for (int i = 0; i < 26; i++)
+        if (idx == 3 || idx == 4)
+            max_score += 1;
+        else if (idx == 5)
+            max_score += 2;
+        else if (idx == 6)
+            max_score += 3;
+        else if (idx == 7)
+            max_score += 5;
+        else if (idx == 8)
+            max_score += 11;
+
+        if (idx > max_len) // 현재 찾은 단어의 길이가, 지금까지 찾은 단어의 길이보다 길다면 갱신
         {
-            if (children[i] != NULL)
-                children[i]->clearHit();
+            max_len = idx;
+            max_idx = word; // 가장 긴 길이의 단어 위치(dict나 found 상에서의 위치) 표시
         }
-    }
-    bool hasChild(char c) // 자식있는 지 즉, 해당 문자가 이어지는지
-    {
-        return children[c - 'A'] != NULL;
-    }
-};
-
-struct Trie
-{
-    TrieNode *root = new TrieNode();
-
-    void insert(string word)
-    {
-        TrieNode *current = root;
-        for (int i = 0; i < word.size(); i++)
-        {
-            char c = word[i];
-            int index = c - 'A';
-            if (current->hasChild(c) == false) // 다음 문자를 갖는 노드가 없으면
-            {
-                current->children[c - 'A'] = new TrieNode(); // 생성
-            }
-            current = current->getChild(c); // current 포인터 옮기기
-        }
-        current->isEnd = true;
-    }
-
-    bool checkWord(string word)
-    {
-        TrieNode *current = root;
-        for (int i = 0; i < word.size(); i++)
-        {
-            char c = word[i];
-            if (current->hasChild(c)) // 알파벳 하나씩 따라간다
-            {
-                current = current->getChild(c); // 포인터 한칸씩 아래로 이동
-            }
-            else
-                return false; // 문자열이 중간에 끊기면 false 반환
-        }
-        return current->isEnd; // 최종적으로 도착한 노드의 isEnd를 반환, 찾고자하는 문자열이 저장된 적이 있으면 true를 반환하게 됨
-    }
-};
-
-int m, w;
-char arr[4][4];
-bool visited[4][4];
-int score[] = {0, 0, 0, 1, 1, 2, 3, 5, 11};
-int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
-int dy[] = {-1, 0, 1, -1, 1, 1, 0, -1};
-int cnt = 0, sum = 0;
-vector<char> sol;
-string tmp, answer;
-
-string stringCmp(string s1, string s2)
-{
-    if (s1.size() == s2.size())
-    {
-        if (s1.compare(s2) == -1)
-            return s1;
-        else
-            return s2;
+        word_cnt++; // 찾은 단어 수 하나 증가
     }
     else
     {
-        if (s1.size() < s2.size())
-            return s2;
-        else
-            return s1;
+        for (int i = 0; i < 8; i++)
+        {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if (nx > -1 && nx < 4 && ny > -1 && ny < 4 && !visited[nx][ny] && board[nx][ny] == dict[word][idx]) // 4. 갈수있다면
+            {
+                dfs(word, idx, nx, ny); // 5. 간다
+            }
+        }
     }
-}
-
-bool isInside(int x, int y)
-{
-    return (-1 < x && x < 4 && -1 < y && y < 4);
-}
-
-void dfs(int x, int y, int length, TrieNode *node)
-{
-    // 1. 체크인
-    visited[x][y] = true;
-    sol.push_back(arr[x][y]);
-
-    // 2. 목적지인가
-    if (node->isEnd == true && node->isHit == false)
-    {
-        node->isHit = true;   // 찾은 적이 있다고 적어두고
-        sum += score[length]; // 점수 합산
-        cnt++;                // 찾은 단어 수 하나 증가
-        string f = "";        // 빈 문자열
-        for (int i = 0; i < sol.size(); i++)
-            f += sol[i];
-        answer = stringCmp(answer, f);
-    }
-
-    // 3. 갈 수 있는 곳 순회
-    for (int i = 0; i < 8; i++)
-    {
-        int nx = x + dx[i];
-        int ny = y + dy[i];
-
-        if (isInside(nx, ny) && !visited[nx][ny] && node->hasChild(arr[nx][ny])) // 4. 갈 수 있는가?
-            dfs(nx, ny, length + 1, node->getChild(arr[nx][ny]));                // 5. 간다.
-    }
-
-    // 6. 체크아웃
-    visited[x][y] = false;
-    sol.erase(sol.begin() + length - 1);
+    visited[x][y] = 0;
+    idx--;
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
-    Trie tr;
-    int n;
-    cin >> n;
-
-    for (int i = 0; i < n; i++)
-    {
-        string s;
-        cin >> s;
-        tr.insert(s);
-    }
 
     cin >> w;
-    tr.root->clearHit(); // 초기화
 
-    for (int k = 0; k < w; k++)
+    string tmp = "";
+    for (int i = 0; i < w; i++)
     {
-        memset(arr, 0, sizeof(arr));
-        memset(visited, false, sizeof(visited));
+        cin >> tmp;
+        dict.push_back(tmp);
+    }
 
-        answer = "";
-        sum = 0, cnt = 0;
+    sort(dict.begin(), dict.end()); // 게임 중 찾아야할 단어들 입력 및 정렬 종료
+
+    cin >> b;
+    for (int k = 0; k < b; k++)
+    {
         for (int i = 0; i < 4; i++)
         {
+            cin >> tmp;
             for (int j = 0; j < 4; j++)
+                board[i][j] = tmp[j];
+        }
+
+        for (int i = 0; i < w; i++)
+            found[i] = 0;
+        max_score = 0, max_len = -1, max_idx = 0, word_cnt = 0;
+
+        for (int t = 0; t < w; t++)
+        {
+            for (int i = 0; i < 4; i++)
             {
-                char a;
-                cin >> a;
-                arr[i][j] = a;
+                for (int j = 0; j < 4; j++)
+                {
+                    if (board[i][j] == dict[t][0] && found[t] == 0) // 해당 단어를 찾은적이 없다면, 첫 글자부터 찾고 dfs 돌리기 시작
+                    {
+                        dfs(t, 0, i, j);
+                    }
+                }
             }
         }
 
-        for (int x = 0; x < 4; x++)
-        {
-            for (int y = 0; y < 4; y++)
-            {
-                if (tr.root->hasChild(arr[x][y]))
-                    dfs(x, y, 1, tr.root->getChild(arr[x][y]));
-            }
-        }
-        tr.root->clearHit(); // 초기화
-        cout << sum << " " << answer << " " << cnt << '\n';
+        cout << max_score << ' ' << dict[max_idx] << ' ' << word_cnt << '\n';
     }
 
     return 0;

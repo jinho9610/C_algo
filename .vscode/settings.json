@@ -6,6 +6,9 @@
         "iostream": "cpp",
         "vector": "cpp",
         "xiosbase": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "queue": "cpp",
+        "stack": "cpp",
+        "xstddef": "cpp"
     }
 }
