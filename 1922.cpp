@@ -70,9 +70,6 @@ int main()
     //간선의 크기 순으로 정렬
     sort(edge.begin(), edge.end(), cmp);
 
-    // for (int i = 0; i < m; i++)
-    //     cout << edge[i].a << ' ' << edge[i].b << ' ' << edge[i].c << '\n';
-
     ll min_cost = 0; // 최소비용
     // union-find 이용해서 트리 구성
     for (int i = 0; i < m; i++)

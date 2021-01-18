@@ -1,4 +1,4 @@
-// 풀이에 사용된 알고리즘:
+// 풀이에 사용된 알고리즘: 다익스트라
 
 #include <iostream>
 #include <functional>
