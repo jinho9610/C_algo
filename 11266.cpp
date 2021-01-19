@@ -1,4 +1,4 @@
-// 풀이에 사용된 알고리즘: 단절점 찾기. 제대로 풀이 불가
+// 풀이에 사용된 알고리즘: DFS
 
 #include <iostream>
 #include <functional>
@@ -9,6 +9,7 @@
 #include <cmath>
 #include <string.h>
 #include <vector>
+#include <set>
 
 using namespace std;
 
@@ -16,53 +17,36 @@ typedef long long ll;
 
 int v, e, visited_order[10010], num = 1; // 점, 간선, 방문순서
 ll cnt = 0;
-vector<int> adj[10010];
-bool ans[10010]; // 단절점인지 아닌지
+vector<int> adj[100010];
+set<int> ans;
 
-int dfs(int parent, int cur, bool isRoot)
+int dfs(int cur, bool isRoot)
 {
-    int min_visited_order = 20000; // 내 자식들이 만날 수 있는 점 중에서 가장 작은 점
-    int childCnt = 0;
+    visited_order[cur] = num++;
 
-    visited_order[cur] = num++; // 어떤 점을 몇번째로 방문했는 지 표시
+    int ret = visited_order[cur]; // 현재 노드에서 올라갈 수 있는 최대한 작은 번호
 
-    for (int i = 0; i < adj[cur].size(); i++)
+    int CT = 0; //자식 트리의 수
+
+    for (auto child : adj[cur])
     {
-        int nxt = adj[cur][i];
-        if (nxt == parent)
-            continue;
-
-        if (visited_order[nxt])
-            min_visited_order = min(min_visited_order, visited_order[nxt]);
+        if (visited_order[child] != 0) // 이미 방문한 적이 있다면
+            ret = min(ret, visited_order[child]);
         else
         {
-            min_visited_order = min(min_visited_order, dfs(cur, nxt, false));
-            if (isRoot != true && dfs(cur, nxt, false) >= visited_order[cur])
-                ans[cur] = true;
-            childCnt++;
+            //방문한 적이 없는 경우 자식 트리 생성
+            CT++;
+            int Ctree = dfs(child, false);              // 자식 노드는 root 노드일 수는 없으니 false
+            if (Ctree >= visited_order[cur] && !isRoot) // 현재 노드가 root가 아니고, 자식 노드들이 내 위(나보다 작은 번호의 노드)로 가지 못하면
+                ans.insert(cur);
+
+            ret = min(ret, Ctree); // 올라갈 수 있는 가장 높은 노드(번호가 가장 작은 노드) 갱신
         }
     }
+    if (isRoot && CT >= 2) // 내가 root 노드인데 자식 트리가 2개인 경우에는 root를 지우면, 단절된 두 개의 트리 생성
+        ans.insert(cur);
 
-    // 리프노드면, 단절점처리 x
-    if (adj[cur].size() == 1)
-        return visited_order[cur];
-
-    if (isRoot)
-    {
-        if (childCnt >= 2)
-        {
-            ans[cur] = true;
-        }
-    }
-    else
-    {
-        if (min_visited_order >= visited_order[cur])
-        {
-            ans[cur] = true;
-        }
-    }
-
-    return min(min_visited_order, visited_order[cur]);
+    return ret;
 }
 
 int main()
@@ -82,20 +66,20 @@ int main()
     }
 
     //단절점 찾고
+    num = 1;
     for (int i = 1; i <= v; i++)
     {
         if (!visited_order[i])
-            dfs(0, i, true);
+            if (visited_order[i] == 0)
+                dfs(i, true);
     }
 
     // 출력
 
-    cout << cnt << '\n';
-    for (int i = 1; i <= v; i++)
-    {
-        if (ans[i])
-            cout << i << ' ';
-    }
+    cout << ans.size() << '\n';
+    for (auto e : ans)
+        cout << e << ' ';
+    cout << '\n';
 
     return 0;
 }
