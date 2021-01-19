@@ -65,7 +65,7 @@ int main()
     for (int i = 1; i <= n; i++)
     {
         if (dist[i] == INF)
-            cout << "INFINITY" << '\n';
+            cout << "INF" << '\n';
         else
             cout << dist[i] << '\n';
     }
