@@ -89,8 +89,9 @@ int main()
         }
 
         dijkstra(s);
-        dist.resize(n + 1, INF);
-        //dijkstra(s);
+        for (int i = 0; i <= n + 1; i++)
+            dist[i] = INF;
+        dijkstra(s);
 
         cout << dist[d] << '\n';
     }
