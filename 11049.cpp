@@ -20,11 +20,11 @@ ll dp[501][501];
 
 ll calc(int start, int end) // 행렬 s부터 행렬 e까지 계산했을 때 연산 횟수의 최솟값
 {
+    if (end - start == 1)
+        return dp[start][end] = matrix[start].first * matrix[start].second * matrix[end].second;
+
     if (start == end)
         return 0;
-
-    if (end - start == 1)
-        return dp[start][end] = matrix[start].first * matrix[end].second * matrix[end].second;
 
     if (dp[start][end])
         return dp[start][end];
@@ -32,7 +32,7 @@ ll calc(int start, int end) // 행렬 s부터 행렬 e까지 계산했을 때 �
     ll mn = -1;
     for (int mid = start; mid < end; mid++)
     {
-        ll tmp = calc(start, mid) + calc(mid + 1, end) + matrix[start].first * matrix[start].second * matrix[end].second;
+        ll tmp = calc(start, mid) + calc(mid + 1, end) + matrix[start].first * matrix[mid].second * matrix[end].second;
         if (mn == -1 || tmp < mn)
             mn = tmp;
     }
