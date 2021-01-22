@@ -9,6 +9,8 @@
         "xstring": "cpp",
         "queue": "cpp",
         "stack": "cpp",
-        "xstddef": "cpp"
+        "xstddef": "cpp",
+        "map": "cpp",
+        "unordered_map": "cpp"
     }
 }
