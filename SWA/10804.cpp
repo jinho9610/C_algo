@@ -15,6 +15,7 @@ using namespace std;
 typedef long long ll;
 
 int tc, n;
+string s1;
 
 int main()
 {
@@ -28,6 +29,25 @@ int main()
 
     for (int t = 1; t <= tc; t++) // testcase
     {
+        cin >> s1;
+        string ans = "";
+
+        for (int i = s1.size() - 1; i >= 0; i--)
+        {
+            char a;
+            a = s1[i];
+
+            if (a == 'b')
+                ans += 'd';
+            else if (a == 'd')
+                ans += 'b';
+            else if (a == 'p')
+                ans += 'q';
+            else if (a == 'q')
+                ans += 'p';
+        }
+
+        cout << '#' << t << ' ' << ans << '\n';
     }
 
     return 0;
