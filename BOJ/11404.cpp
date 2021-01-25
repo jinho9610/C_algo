@@ -12,9 +12,9 @@ using namespace std;
 
 typedef long long ll;
 
-int n, m;
-int dist[101][101];
 const int INF = 1e9;
+int n, m, dist[101][101];
+vector<pair<int, int>> adj;
 
 int main()
 {
@@ -22,8 +22,9 @@ int main()
     cin.tie(0);
     cout.tie(0);
 
+    freopen("input.txt", "r", stdin);
+
     cin >> n >> m;
-    // A에서 B로 가는 최단 거리 구하기
 
     for (int i = 1; i <= n; i++)
     {
@@ -36,18 +37,17 @@ int main()
         }
     }
 
-    for (int i = 1; i <= m; i++)
+    for (int i = 0; i < m; i++)
     {
         int a, b, c;
         cin >> a >> b >> c;
-        if (dist[a][b] > c) // 이게 왜 필요하지 // 아 특정 두 도시를 연결하는 노선이 한개가 아니니까
-            dist[a][b] = c;
+        dist[a][b] = min(dist[a][b], c);
     }
 
     for (int k = 1; k <= n; k++)
         for (int i = 1; i <= n; i++)
             for (int j = 1; j <= n; j++)
-                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]); // floyd-warshall
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
 
     for (int i = 1; i <= n; i++)
     {

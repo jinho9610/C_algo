@@ -11,6 +11,8 @@
         "stack": "cpp",
         "xstddef": "cpp",
         "map": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "functional": "cpp",
+        "xlocale": "cpp"
     }
 }
