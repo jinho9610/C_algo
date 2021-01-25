@@ -14,11 +14,11 @@ using namespace std;
 
 typedef long long ll;
 
-int n, arr[21][21], dist[21][21], shark_size = 1, shark_x, shark_y;
-int min_dist;
+const int INF = 1e9;
+int n, arr[21][21], dist[21][21], shark_size = 2, shark_x, shark_y;
 
-int dx[] = {1, -1, 0, 0};
-int dy[] = {0, 0, 1, -1};
+int dx[] = {-1, 0, 1, 0};
+int dy[] = {0, 1, 0, -1};
 
 bool isInside(int x, int y)
 {
@@ -35,7 +35,6 @@ bool cmp(pair<int, int> p1, pair<int, int> p2)
 
 void bfs() // 모든 위치까지의 최단거리만 계산하는 bfs
 {
-    min_dist = 1e9;
     memset(dist, 0xff, sizeof(dist));
 
     queue<pair<int, int>> q;
@@ -54,33 +53,42 @@ void bfs() // 모든 위치까지의 최단거리만 계산하는 bfs
             int ny = y + dy[i];
 
             // 맵 내부이고, 방문한적이 없고, 나보다 같거나 작은 물고기만 지나갈 수 있음
-            if (isInside(nx, ny) && dist[nx][ny] == -1 && arr[nx][ny] <= shark_size)
+            if (1 <= nx && nx <= n && 1 <= ny && ny <= n)
             {
-                dist[nx][ny] = dist[x][y] + 1;
-                if (arr[nx][ny] > 0)
-                    min_dist = min(min_dist, dist[nx][ny]);
-                q.push({nx, ny});
+                if (dist[nx][ny] == -1 && arr[nx][ny] <= shark_size)
+                {
+                    dist[nx][ny] = dist[x][y] + 1;
+                    q.push({nx, ny});
+                }
             }
         }
     }
 }
 
-// pair<int, int> find_fish() // 먹을 물고기 정하기
-// {
-//     vector<pair<int, int>> tmp;
-//     for (int i = 1; i <= n; i++)
-//     {
-//         for (int j = 1; j <= n; j++)
-//         {
-//             if (dist[i][j] == min_dist)
-//                 tmp.push_back({i, j});
-//         }
-//     }
+pair<pair<int, int>, int> find_fish() // 먹을 물고기 정하기
+{
+    int min_dist = INF, x = -1, y = -1;
 
-//     sort(tmp.begin(), tmp.end(), cmp);
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= n; j++)
+        {
+            if (dist[i][j] != -1 && 1 <= arr[i][j] && arr[i][j] < shark_size)
+            {
+                if (dist[i][j] < min_dist)
+                {
+                    x = i, y = j;
+                    min_dist = dist[i][j];
+                }
+            }
+        }
+    }
 
-//     return {tmp[0].first, tmp[0].second};
-// }
+    if (min_dist == INF)
+        return {{x, y}, min_dist};
+    else
+        return {{x, y}, min_dist};
+}
 
 int main()
 {
@@ -95,27 +103,41 @@ int main()
         {
             cin >> arr[i][j];
             if (arr[i][j] == 9)
+            {
                 shark_x = i, shark_y = j;
+                arr[shark_x][shark_y] = 0;
+            }
         }
     }
 
-    int cnt = 0;
+    int result = 0, ate = 0; // 총 이동 거리(시간), 현재 크기에서 섭취한 물고기 수
     while (true)
     {
-        bfs();                                // 먹을 수 있는 모든 물고기 찾고
-        pair<int, int> new_pos = find_fish(); // 가장 가까운 물고기 먹고 나면
+        bfs();                                         // 먹을 수 있는 모든 물고기 찾고
+        pair<pair<int, int>, int> value = find_fish(); // 가장 가까운 물고기 먹고 나면
 
-        if (shark_x == new_pos.first && shark_y == new_pos.second) // 더이상 섭취할 물고기가 없는 경우
+        int new_x = value.first.first;
+        int new_y = value.first.second;
+        int min_dist = value.second;
+
+        if (new_x == -1 && new_y == -1) // 더이상 섭취할 물고기가 없는 경우
             break;
 
-        cnt++;
+        result += min_dist;
+
+        shark_x = new_x, shark_y = new_y; // 상어 이동
         arr[shark_x][shark_y] = 0;
-        shark_x = new_pos.first, shark_y = new_pos.second; // 상어 이동
-        shark_size += arr[shark_x][shark_y];               // 상어 크기 변화
-        arr[shark_x][shark_y] = 9;
+
+        ate += 1;
+
+        if (ate >= shark_size)
+        {
+            shark_size++;
+            ate = 0;
+        }
     }
 
-    cout << cnt << endl;
+    cout << result << endl;
 
     return 0;
 }
