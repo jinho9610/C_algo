@@ -13,6 +13,7 @@
         "map": "cpp",
         "unordered_map": "cpp",
         "functional": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "ios": "cpp"
     }
 }
