@@ -37,7 +37,7 @@ int main()
         if (i + info[i].first <= n + 1)
         {
             dp[i] = max(dp[i + info[i].first] + info[i].second, max_val);
-            max_val = max(max_val, dp[i]);
+            max_val = dp[i];
         }
         else
             dp[i] = max_val;
