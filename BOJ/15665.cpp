@@ -9,31 +9,30 @@
 #include <cmath>
 #include <string.h>
 #include <vector>
+#include <set>
 
 using namespace std;
 
 typedef long long ll;
 
-int n, s, arr[21], result;
-bool selected[21];
+int n, m, arr[8];
+bool selected[8];
+set<vector<int>> s;
 vector<int> ans;
 
-void dfs(int idx, int cnt, int sum)
+void dfs(int depth)
 {
-    if (cnt > 0 && sum == s)
-        result++;
-
-    if (cnt == n)
-        return;
-
-    for (int i = idx + 1; i <= n; i++)
+    if (depth == m)
     {
-        if (!selected[i])
-        {
-            selected[i] = true;
-            dfs(i, cnt + 1, sum + arr[i]);
-            selected[i] = false;
-        }
+        s.insert(ans);
+        return;
+    }
+
+    for (int i = 1; i <= n; i++)
+    {
+        ans.push_back(arr[i]);
+        dfs(depth + 1);
+        ans.pop_back();
     }
 }
 
@@ -43,16 +42,21 @@ int main()
     cin.tie(0);
     cout.tie(0);
 
-    cin >> n >> s;
+    cin >> n >> m;
 
     for (int i = 1; i <= n; i++)
         cin >> arr[i];
 
-    sort(arr + 1, arr + n); // 오름차순 정렬
+    sort(arr + 1, arr + 1 + n);
 
-    dfs(0, 0, 0);
+    dfs(0);
 
-    cout << result << endl;
+    for (auto v : s)
+    {
+        for (auto i : v)
+            cout << i << ' ';
+        cout << '\n';
+    }
 
     return 0;
 }

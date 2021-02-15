@@ -14,25 +14,28 @@ using namespace std;
 
 typedef long long ll;
 
-int n, s, arr[21], result;
-bool selected[21];
+int n, m, arr[9], selected[9]; // 1부터 n까지 자연수 중 중복 없이 m개를 고른 수열
 vector<int> ans;
 
-void dfs(int idx, int cnt, int sum)
+void dfs(int idx, int cnt)
 {
-    if (cnt > 0 && sum == s)
-        result++;
-
-    if (cnt == n)
+    if (cnt == m)
+    {
+        for (auto a : ans)
+            cout << a << ' ';
+        cout << '\n';
         return;
+    }
 
-    for (int i = idx + 1; i <= n; i++)
+    for (int i = 1; i <= n; i++)
     {
         if (!selected[i])
         {
+            ans.push_back(arr[i]);
             selected[i] = true;
-            dfs(i, cnt + 1, sum + arr[i]);
+            dfs(i, cnt + 1);
             selected[i] = false;
+            ans.pop_back();
         }
     }
 }
@@ -43,16 +46,14 @@ int main()
     cin.tie(0);
     cout.tie(0);
 
-    cin >> n >> s;
+    //freopen("input.txt", "r", stdin);
 
-    for (int i = 1; i <= n; i++)
-        cin >> arr[i];
+    cin >> n >> m;
 
-    sort(arr + 1, arr + n); // 오름차순 정렬
+    for (int i = 0; i <= n; i++)
+        arr[i] = i;
 
-    dfs(0, 0, 0);
-
-    cout << result << endl;
+    dfs(0, 0);
 
     return 0;
 }
