@@ -14,6 +14,8 @@
         "unordered_map": "cpp",
         "functional": "cpp",
         "xlocale": "cpp",
-        "ios": "cpp"
+        "ios": "cpp",
+        "set": "cpp",
+        "deque": "cpp"
     }
 }
