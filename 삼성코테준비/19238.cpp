@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -13,8 +15,8 @@ typedef long long ll;
 int n, m, fuel, arr[21][21];
 int tx, ty; // taxi x, taxi y
 int visited[21][21];
-int dx[] = {-1, 0, 1, 0};
-int dy[] = {0, 1, 0, -1};
+int dx[] = { -1, 0, 1, 0 };
+int dy[] = { 0, 1, 0, -1 };
 bool cantmove = false;
 
 pair<int, int> rider[21][21];
@@ -44,11 +46,11 @@ bool cmp(pair<int, int> p1, pair<int, int> p2)
 pair<int, int> pick_rider()
 {
     int min_val = -1;
-    memset(visited, 0xff, sizeof(visited)); // -1ë¡œ ì´ˆê¸°í™”
+    memset(visited, 0xff, sizeof(visited)); // -1·Î ÃÊ±âÈ­
     visited[tx][ty] = 0;
     queue<pair<int, int>> q;
     vector<pair<int, int>> tmp;
-    q.push({tx, ty});
+    q.push({ tx, ty });
 
     while (!q.empty())
     {
@@ -56,10 +58,10 @@ pair<int, int> pick_rider()
 
         if (min_val == -1)
         {
-            if (isRider[x][y]) // ìŠ¹ê°ë°œê²¬í•˜ë©´
+            if (isRider[x][y]) // ½Â°´¹ß°ßÇÏ¸é
             {
                 min_val = visited[x][y];
-                tmp.push_back({x, y});
+                tmp.push_back({ x, y });
             }
         }
         else
@@ -67,7 +69,7 @@ pair<int, int> pick_rider()
             if (visited[x][y] > min_val)
                 break;
             if (isRider[x][y] && min_val == visited[x][y])
-                tmp.push_back({x, y});
+                tmp.push_back({ x, y });
         }
 
         q.pop();
@@ -75,20 +77,20 @@ pair<int, int> pick_rider()
         for (int i = 0; i < 4; i++)
         {
             int nx = x + dx[i], ny = y + dy[i];
-            // ì˜ì—­ ì•ˆì´ê³ , ë°©ë¬¸í•œì ì´ ì—†ë‹¤ë©´
+            // ¿µ¿ª ¾ÈÀÌ°í, ¹æ¹®ÇÑÀûÀÌ ¾ø´Ù¸é
             if (isInside(nx, ny) && arr[nx][ny] != 1 && visited[nx][ny] == -1)
             {
-                q.push({nx, ny});
+                q.push({ nx, ny });
                 visited[nx][ny] = visited[x][y] + 1;
             }
         }
     }
 
-    if (tmp.size() == 0) // ì°¾ì•„ê°ˆ ìˆ˜ ìˆëŠ” ì†ë‹˜ì´ ì—†ëŠ” ê²½ìš°
-        return {1e9, 1e9};
+    if (tmp.size() == 0)
+        return { 1e9, 1e9 };
 
     else
-    { // tmpì—ì„œ ì¡°ê±´ì— ë¶€í•©í•˜ëŠ” ì§€ì  ì°¾ì•„ì•¼í•´
+    {// tmp¿¡¼­ Á¶°Ç¿¡ ºÎÇÕÇÏ´Â ÁöÁ¡ Ã£¾Æ¾ßÇØ
         sort(tmp.begin(), tmp.end(), cmp);
         return tmp[0];
     }
@@ -96,14 +98,14 @@ pair<int, int> pick_rider()
 
 void ride(int rx, int ry)
 {
-    // (rx, ry)ëŠ” í˜„ì¬ íƒœìš°ë ¤ëŠ” ìŠ¹ê°ì˜ ìœ„ì¹˜
+    // (rx, ry)´Â ÇöÀç ÅÂ¿ì·Á´Â ½Â°´ÀÇ À§Ä¡
     //cout << "rxry: " << rx << " " << ry << endl;
     int dest_x = rider[rx][ry].first, dest_y = rider[rx][ry].second;
     //cout << "dest" << dest_x << dest_y << endl;
 
     memset(visited, 0xff, sizeof(visited));
     queue<pair<int, int>> q;
-    q.push({tx, ty});
+    q.push({ tx, ty });
     visited[rx][ry] = 0;
     while (!q.empty())
     {
@@ -120,19 +122,19 @@ void ride(int rx, int ry)
             int nx = x + dx[i], ny = y + dy[i];
             if (isInside(nx, ny) && visited[nx][ny] == -1 && arr[nx][ny] == 0)
             {
-                q.push({nx, ny});
+                q.push({ nx, ny });
                 visited[nx][ny] = visited[x][y] + 1;
             }
         }
     }
-    int len = visited[dest_x][dest_y]; // ì´ë™í•´ì•¼í•˜ëŠ” ê±°ë¦¬
-    if (len == -1)                     // ìŠ¹ê°íƒœì› ëŠ”ë° ëª©ì ì§€ê°€ ë„ë‹¬ ë¶ˆê°€í•œ ê²½ìš°
+    int len = visited[dest_x][dest_y]; // ÀÌµ¿ÇØ¾ßÇÏ´Â °Å¸®
+    if (len == -1)                     // ½Â°´ÅÂ¿ü´Âµ¥ ¸ñÀûÁö°¡ µµ´Ş ºÒ°¡ÇÑ °æ¿ì
     {
         cantmove = true;
         return;
     }
     //cout << "dddd" << len << endl;
-    if (len > fuel) // ì—°ë£Œë¶€ì¡±í•´ì„œ ì´ë™ëª»í•˜ëŠ”ê²½ìš°
+    if (len > fuel) // ¿¬·áºÎÁ·ÇØ¼­ ÀÌµ¿¸øÇÏ´Â°æ¿ì
     {
         cantmove = true;
         return;
@@ -140,8 +142,8 @@ void ride(int rx, int ry)
     else
     {
         fuel = fuel - len + len * 2;
-        isRider[rx][ry] = false;  // ì¶œë°œì ì—ì„œ ìŠ¹ê°ì œê±°
-        tx = dest_x, ty = dest_y; // ë„ì°©ì§€ë¡œ íƒì‹œì¢Œí‘œ ë³€ê²½
+        isRider[rx][ry] = false;  // Ãâ¹ßÁ¡¿¡¼­ ½Â°´Á¦°Å
+        tx = dest_x, ty = dest_y; // µµÂøÁö·Î ÅÃ½ÃÁÂÇ¥ º¯°æ
     }
 }
 
@@ -159,19 +161,19 @@ int main()
         for (int j = 1; j <= n; j++)
             cin >> arr[i][j];
 
-    cin >> tx >> ty; // ì´ˆê¸° íƒì‹œ ìœ„ì¹˜
+    cin >> tx >> ty; // ÃÊ±â ÅÃ½Ã À§Ä¡
 
     for (int i = 0; i < m; i++)
     {
         int sx, sy, dx, dy; // (sx, sy) -> (dx, dy)
         cin >> sx >> sy >> dx >> dy;
-        rider[sx][sy] = {dx, dy};
+        rider[sx][sy] = { dx, dy };
         isRider[sx][sy] = true;
     }
 
     for (int i = 0; i < m; i++)
     {
-        pair<int, int> r = pick_rider(); // ìŠ¹ê°ê³ ë¥´ê¸°
+        pair<int, int> r = pick_rider(); // ½Â°´°í¸£±â
         int rx = r.first, ry = r.second;
 
         if (rx == 1e9 && ry == 1e9)
@@ -180,23 +182,23 @@ int main()
             return 0;
         }
 
-        int len = visited[rx][ry]; // ì´ë™í•´ì•¼í•˜ëŠ” ê±°ë¦¬
+        int len = visited[rx][ry]; // ÀÌµ¿ÇØ¾ßÇÏ´Â °Å¸®
         //cout << len << endl;
-        if (len >= fuel) // ì—°ë£Œ ë¶€ì¡±í•´ì„œ ì´ë™ëª»í•˜ëŠ” ê²½ìš°
+        if (len >= fuel) // ¿¬·á ºÎÁ·ÇØ¼­ ÀÌµ¿¸øÇÏ´Â °æ¿ì
         {
-            // ìŠ¹ê°íƒœìš°ëŸ¬ ì´ë™í•˜ê³  ì—°ë£Œ 0ë˜ëŠ” ê²½ìš°ë„ ì œëŒ€ë¡œ ì¶œë°œ ë¶ˆê°€
+            // ½Â°´ÅÂ¿ì·¯ ÀÌµ¿ÇÏ°í ¿¬·á 0µÇ´Â °æ¿ìµµ Á¦´ë·Î Ãâ¹ß ºÒ°¡
             cout << -1 << endl;
             return 0;
         }
         else
         {
-            fuel -= len;      // ì—°ë£Œ ì†Œëª¨
-            tx = rx, ty = ry; // ìŠ¹ê°ìœ„ì¹˜ë¡œ íƒì‹œ ì´ë™
+            fuel -= len; // ¿¬·á ¼Ò¸ğ
+            tx = rx, ty = ry;
 
-            ride(rx, ry); // ìŠ¹ê°ì„ ë„ì°©ì§€ë¡œ íƒœìš°ê³  ê°„ë‹¤
+            ride(rx, ry);
         }
-
-        if (cantmove) // ì—°ë£Œ ë¶€ì¡±ì´ë‚˜, ëª©ì ì§€ë¡œ ë„ë‹¬ì´ ë¶ˆê°€ëŠ¥í•œ ê²½ìš° rideí•¨ìˆ˜ëŠ” cantmoveë¥¼ falseë¡œ ë§Œë“ ë‹¤.
+        //cout << i + 1 << " " << fuel << endl;
+        if (cantmove)
         {
             cout << -1 << endl;
             return 0;
