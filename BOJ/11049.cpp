@@ -1,60 +1,68 @@
-// 풀이에 사용된 알고리즘:
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include <functional>
 #include <algorithm>
-#include <string>
 #include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
-#include <vector>
 
 using namespace std;
 
-typedef long long ll;
+int n, dp[501][501], path[501][501];
+vector<pair<int, int>> mat(501);
 
-int n;
-pair<int, int> matrix[501];
-ll dp[501][501];
-
-ll calc(int start, int end) // 행렬 s부터 행렬 e까지 계산했을 때 연산 횟수의 최솟값
+int minCalc(int i, int j)
 {
-    if (end - start == 1)
-        return dp[start][end] = matrix[start].first * matrix[start].second * matrix[end].second;
+	if (i == j)
+		return 0;
 
-    if (start == end)
-        return 0;
+	if (dp[i][j])
+		return dp[i][j];
 
-    if (dp[start][end])
-        return dp[start][end];
+	int tmp_min_val = 1e9, tmp_min_idx = i;
+	for (int k = i; k < j; k++)
+	{
+		int tmp = minCalc(i, k) + minCalc(k + 1, j) + mat[i].first * mat[k].second * mat[j].second;
+		if (tmp_min_val > tmp)
+		{
+			tmp_min_val = tmp;
+			tmp_min_idx = k;
+		}
+	}
 
-    ll mn = -1;
-    for (int mid = start; mid < end; mid++)
-    {
-        ll tmp = calc(start, mid) + calc(mid + 1, end) + matrix[start].first * matrix[mid].second * matrix[end].second;
-        if (mn == -1 || tmp < mn)
-            mn = tmp;
-    }
+	path[i][j] = tmp_min_idx;
+	return dp[i][j] = tmp_min_val;
+}
 
-    return dp[start][end] = mn;
+void order(int i, int j)
+{
+	if (i == j)
+		cout << "A" << i;
+	else
+	{
+		int k = path[i][j];
+		cout << "(";
+		order(i, k);
+		order(k + 1, j);
+		cout << ")";
+	}
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	freopen("input.txt", "r", stdin);
 
-    cin >> n;
-    for (int i = 1; i <= n; i++)
-    {
-        int r, c;
-        cin >> r >> c;
-        matrix[i].first = r, matrix[i].second = c;
-    }
+	cin >> n;
 
-    cout << calc(1, n) << '\n';
+	for (int i = 1; i <= n; i++)
+	{
+		int r, c;
+		cin >> r >> c;
+		
+		mat[i] = { r, c };
+	}
 
-    return 0;
+	cout << minCalc(1, n) << endl;
+
+	order(1, n);
+
+	return 0;
 }

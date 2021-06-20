@@ -1,65 +1,58 @@
-// 풀이에 사용된 알고리즘:
+/**/
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include <functional>
-#include <algorithm>
-#include <string>
 #include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
 #include <vector>
+#include <algorithm>
+#include <string.h>
+#include <cstring>
+
+#define endl '\n'
 
 using namespace std;
 
 typedef long long ll;
 
-int n, w[11][11], visited[11], selected[11];
-int result = 1e9, start;
+const int INF = 1e9;
+int n, w[10][10], dp[10][1 << 10];
 
-void dfs(int cur, int cnt, int cost)
+int tsp(int cur, int state)
 {
-    if (cnt == n && cur == start) // n개 도시 모두 방문했으면
-    {
-        result = min(result, cost);
-        return;
-    }
+	if (state & 1 && state != (1 << n) - 1)
+		return INF;
+	if (state & 1 && state == (1 << n) - 1)
+		return 0;
 
-    for (int i = 1; i <= n; i++)
-    {
-        if (w[cur][i] == 0)
-            continue;
+	int& ret = dp[cur][state];
+	if (ret != -1)
+		return ret;
 
-        if (!visited[i])
-        {
-            visited[i] = true;
-            dfs(i, cnt + 1, cost + w[cur][i]);
-            visited[i] = false;
-        }
-    }
+	ret = INF;
+
+	for (int i = 0; i < n; i++)
+		if (w[cur][i] > 0 && !(state & (1 << i)))
+			ret = min(ret, tsp(i, state | (1 << i)) + w[cur][i]);
+	
+	return ret;
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
 
-    freopen("input.txt", "r", stdin);
+	freopen("input.txt", "r", stdin);
 
-    cin >> n;
+	cin >> n;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			cin >> w[i][j]; // i -> j ���
 
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
-            cin >> w[i][j];
+	memset(dp, 0xff, sizeof(dp));
 
-    for (int i = 1; i <= n; i++)
-    {
-        start = i;
-        dfs(i, 0, 0);
-    }
+	cout << tsp(0, 0) << endl;
 
-    cout << result << endl;
-
-    return 0;
+	return 0;
 }

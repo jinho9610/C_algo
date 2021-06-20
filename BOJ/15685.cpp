@@ -1,82 +1,90 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <cstring>
 
 using namespace std;
 
+#define endl '\n'
+
+typedef pair<int, int> pii;
 typedef long long ll;
 
 int n;
 bool arr[101][101];
-int dx[] = {1, 0, -1, 0};
-int dy[] = {0, -1, 0, 1};
+int dx[] = { 1,0,-1,0 };
+int dy[] = { 0, -1,0,1 };
 
-void make_dragon(int x, int y, int dir, int g)
+pii rotation(int x, int y, int cx, int cy)
 {
-    vector<pair<int, int>> coords;
-    int start_x, start_y; // ì‹œì‘ì  ì¢Œí‘œ
-    int end_x, end_y;     // ëì  ì¢Œí‘œ ì¦‰ ì¤‘ì‹¬
-
-    for (int i = 0; i <= g; i++)
-    {
-        if (i == 0) // 0ì„¸ëŒ€ ì™„ì„±
-        {
-            start_x = x, start_y = y; // ì‹œì‘ì ì€ ë³€í•˜ì§€ ì•ŠìŒ
-            arr[y][x] = true;
-            end_x = x + dx[dir], end_y = y + dy[dir];
-            arr[end_y][end_x] = true;
-            coords.push_back({y, x});
-            coords.push_back({end_y, end_x});
-        }
-
-        else // 0ì„¸ëŒ€ ì´ìƒë¶€í„°ëŠ” íšŒì „ í•„ìš”
-        {
-            int cx = end_x, cy = end_y;
-            int rotation_cnt = coords.size();
-            for (int j = 0; j < rotation_cnt; j++)
-            {
-                pair<int, int> coord = coords[j];
-                int cur_y = coord.first, cur_x = coord.second; // ì–˜ê°€ íšŒì „ ì´í›„ì—ëŠ” ìƒˆë¡œìš´ ëì  ë˜ì–´ì•¼í•¨
-                int nx = -cur_y + cy + cx, ny = cur_x - cx + cy;
-                if (j == 0) // ìƒˆë¡œìš´ ëì  // ë‹¤ìŒ íšŒì „ì˜ ì¤‘ì‹¬ì´ ë¨
-                    end_x = nx, end_y = ny;
-                coords.push_back({ny, nx});
-                arr[ny][nx] = true;
-            }
-        }
-    }
+	return { -y + cy + cx, x - cx + cy };
 }
 
-int check() // ì •ì‚¬ê°í˜• ì°¾ì„ê±°ì•¼
+void draw_curve(vector<pii>& points)
 {
-    int cnt = 0;
-    for (int i = 0; i < 100; i++)
-        for (int j = 0; j < 100; j++)
-            if (arr[i][j] && arr[i + 1][j] && arr[i][j + 1] && arr[i + 1][j + 1])
-                cnt++;
+	int cur_size = points.size();
+	// ÇöÀç º¤ÅÍ¿¡¼­ °¡Àå µÚÂÊ¿¡ ÀÖ´Â Á¡ÀÌ È¸ÀüÀÇ Áß½ÉÀÌ µÊ
+	int cx = points.back().first, cy = points.back().second;
 
-    return cnt;
+	for (int i = cur_size - 2; i >= 0; i--)
+	{
+		int tx = points[i].first, ty = points[i].second;
+		// (tx, ty)¸¦ (cx, cy)¸¦ Áß½ÉÀ¸·Î È¸ÀüÇÏ°í
+		pii new_pt = rotation(tx, ty, cx, cy);
+		arr[new_pt.second][new_pt.first] = true;
+		// º¤ÅÍ¿¡ ³Ö´Â´Ù.
+		points.push_back(new_pt);
+	}
+}
+
+void print_arr()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+			cout << arr[i][j] << ' ';
+		cout << endl;
+	}
+}
+
+int check()
+{
+	int cnt = 0;
+	for (int i = 0; i <= 100 - 1; i++)
+	{
+		for (int j = 0; j <= 100 -1; j++)
+		{
+			if (arr[i][j] && arr[i][j + 1] && arr[i + 1][j] && arr[i + 1][j + 1])
+				cnt++;
+		}
+	}
+	return cnt;
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	freopen("s_input.txt", "r", stdin);
 
-    freopen("input.txt", "r", stdin);
+	cin >> n;
 
-    cin >> n;
+	for (int i = 0; i < n; i++)
+	{
+		int x, y, d, g;
+		cin >> x >> y >> d >> g;
 
-    for (int i = 0; i < n; i++)
-    {
-        int x, y, d, g;
-        cin >> x >> y >> d >> g;
+		vector<pii> points;
+		int ey = y + dy[d], ex = x + dx[d]; // ³¡Á¡ // Áï 0¼¼´ë´Â ¿Ï¼º
+		arr[y][x] = arr[ey][ex] = true;
+		points.push_back({ x, y });
+		points.push_back({ ex, ey });
 
-        make_dragon(x, y, d, g);
-    }
+		for (int k = 1; k <= g; k++)
+			draw_curve(points);
+	}
 
-    cout << check() << '\n';
+	cout << check() << endl;
 
-    return 0;
+	return 0;
 }
