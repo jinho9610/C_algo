@@ -1,58 +1,54 @@
-// í’€ì´ì— ì‚¬ìš©ëœ ì•Œê³ ë¦¬ì¦˜:
+/* BOJ 1182 ºÎºĞ¼ö¿­ÀÇ ÇÕ */
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include <functional>
-#include <algorithm>
-#include <string>
 #include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
 #include <vector>
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <string.h>
+
+#define endl '\n'
 
 using namespace std;
 
 typedef long long ll;
 
-int n, s, arr[21], result;
-bool selected[21];
-vector<int> ans;
+int n, s, arr[21], ans;
 
 void dfs(int idx, int cnt, int sum)
 {
-    if (cnt > 0 && sum == s)
-        result++;
+	// idx´Â ÀÌ ÇÔ¼ö°¡ È£ÃâµÇ±â Á÷Àü¿¡ arr[idx]°¡ ºÎºĞ ¼ö¿­¿¡ Æ÷ÇÔµÆÀ½À» ÀÇ¹Ì
+	// cnt´Â ÇöÀç ºÎºĞ ¼ö¿­¿¡ Æ÷ÇÔµÈ ¿ø¼ÒÀÇ ¼ö¸¦ ÀÇ¹Ì
+	// sumÀº ºÎºĞ ¼ö¿­À» ±¸¼ºÇÏ´Â ¸ğµç ¿ø¼ÒÀÇ ÇÕÀ» ÀÇ¹Ì
+	// ºÎºĞ ¼ö¿­À» ±¸¼ºÇÏ´Â ¿ø¼Ò°¡ 1°³ ÀÌ»óÀÌ°í,
+	// ¸ğµç ¿ø¼ÒÀÇ ÇÕÀÌ s¿Í °°´Ù¸é ans 1 Áõ°¡
+	if (cnt > 0 && sum == s) 
+		ans++;
 
-    if (cnt == n)
-        return;
+	if (idx == n)
+		return; // n°³ ÀÌ»ó ¼±ÅÃ ºÒ°¡
 
-    for (int i = idx + 1; i <= n; i++)
-    {
-        if (!selected[i])
-        {
-            selected[i] = true;
-            dfs(i, cnt + 1, sum + arr[i]);
-            selected[i] = false;
-        }
-    }
+	for (int i = idx + 1; i <= n; i++)
+		dfs(i, cnt + 1, sum + arr[i]); // arr[i]¸¦ ºÎºĞ ¼ö¿­¿¡ Æ÷ÇÔ½ÃÅ´
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
 
-    cin >> n >> s;
+	//freopen("input.txt", "r", stdin);
 
-    for (int i = 1; i <= n; i++)
-        cin >> arr[i];
+	cin >> n >> s;
+	for (int i = 1; i <= n; i++)
+		cin >> arr[i];
 
-    sort(arr + 1, arr + n); // ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬
+	dfs(0, 0, 0);
 
-    dfs(0, 0, 0);
+	cout << ans << endl;
 
-    cout << result << endl;
-
-    return 0;
+	return 0;
 }

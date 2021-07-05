@@ -1,122 +1,122 @@
-// í’€ì´ì— ì‚¬ìš©ëœ ì•Œê³ ë¦¬ì¦˜:
+/* BOJ 14499 ÁÖ»çÀ§ ±¼¸®±â */
+/* ±¸Çö, ½Ã¹Ä·¹ÀÌ¼Ç */
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include <functional>
-#include <algorithm>
-#include <string>
 #include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
 #include <vector>
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <string.h>
+
+#define endl '\n'
 
 using namespace std;
 
 typedef long long ll;
 
-int n, m, x, y, k, arr[20][20];
-int commands[1001];
-int dx[] = {0, 0, 0, -1, 1};
-int dy[] = {0, 1, -1, 0, 0};
-int t = 0, d = 0, f = 0, b = 0, l = 0, r = 0;
+int n, m, init_x, init_y, k;
+vector<int> commands;
+int arr[20][20];
+int dx[] = { 0, 0, 0, -1, 1 };
+int dy[] = { 0, 1, -1, 0, 0 };
+
+typedef struct DICE
+{
+	int top, bot, right, left, front, back;
+	int x, y;
+
+	DICE()
+	{
+		top = 0, bot = 0, left = 0, front = 0, back = 0;
+		x = init_x, y = init_y;
+	}
+
+} DICE;
 
 bool isInside(int x, int y)
 {
-    return -1 < x && x < n && -1 < y && y < m;
+	return 0 <= x && x < n && 0 <= y && y < m;
 }
 
-void move_dice(int dir)
+void rotate_dice(DICE& dice, int com)
 {
-    if (dir == 1) // ì˜¤ë¥¸ìª½ìœ¼ë¡œ êµ´ë¦¬ëŠ” ê²½ìš°
-    {
-        int tmp = d;
-        d = r;
-        r = t;
-        t = l;
-        l = tmp;
-    }
-
-    else if (dir == 2) // ì™¼ìª½ìœ¼ë¡œ êµ´ë¦¬ëŠ” ê²½ìš°
-    {
-        int tmp = l;
-        l = t;
-        t = r;
-        r = d;
-        d = tmp;
-    }
-
-    else if (dir == 3) // ìœ„ë¡œ êµ´ë¦¬ëŠ” ê²½ìš°
-    {
-        int tmp = b;
-        b = t;
-        t = f;
-        f = d;
-        d = tmp;
-    }
-
-    else if (dir == 4)
-    {
-        int tmp = d;
-        d = f;
-        f = t;
-        t = b;
-        b = tmp;
-    }
-}
-
-void print_dice()
-{
-    cout << "top: " << t << "  ";
-    cout << "down: " << d << "  ";
-    cout << "front: " << f << "  ";
-    cout << "back: " << b << "  ";
-    cout << "left: " << l << "  ";
-    cout << "right: " << r << endl;
+	if (com == 1) // µ¿ÂÊÀ¸·Î ±¼¸®±â
+	{
+		int tmp = dice.left;
+		dice.left = dice.bot;
+		dice.bot = dice.right;
+		dice.right = dice.top;
+		dice.top = tmp;
+	}
+	else if (com == 2) // ¼­ÂÊÀ¸·Ï ±¼¸®±â
+	{
+		int tmp = dice.right;
+		dice.right = dice.bot;
+		dice.bot = dice.left;
+		dice.left = dice.top;
+		dice.top = tmp;
+	}
+	else if (com == 3) // ºÏÂÊÀ¸·Î ±¼¸®±â
+	{
+		int tmp = dice.back;
+		dice.back = dice.top;
+		dice.top = dice.front;
+		dice.front = dice.bot;
+		dice.bot = tmp;
+	}
+	else // ³²ÂÊÀ¸·Î ±¼¸®±â
+	{
+		int tmp = dice.front;
+		dice.front = dice.top;
+		dice.top = dice.back;
+		dice.back = dice.bot;
+		dice.bot = tmp;
+	}
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
 
-    freopen("input.txt", "r", stdin);
+	freopen("input.txt", "r", stdin);
 
-    cin >> n >> m >> x >> y >> k;
+	cin >> n >> m >> init_x >> init_y >> k;
+	for (int i = 0; i < n; i++) // ÃÊ±â º¸µå »óÅÂ ÀÔ·Â
+		for (int j = 0; j < m; j++)
+			cin >> arr[i][j];
 
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < m; j++)
-            cin >> arr[i][j];
+	while (k--)
+	{
+		int a;
+		cin >> a;
+		commands.push_back(a);
+	}
 
-    for (int i = 0; i < k; i++) // ëª…ë ¹ ì…ë ¥
-        cin >> commands[i];
+	DICE dice = DICE();
+	for (int command : commands)
+	{
+		// ÁÖ»çÀ§°¡ ÀÌµ¿ÇÒ Ä­ÀÇ ÁÂÇ¥ ±¸ÇÏ±â
+		int nx = dice.x + dx[command], ny = dice.y + dy[command];
 
-    for (int i = 0; i < k; i++)
-    {
-        int comm = commands[i];
+		if (!isInside(nx, ny)) // ÁÖ»çÀ§°¡ ¸Ê ¹ÛÀ¸·Î ±¼·¯°¡¸é
+			continue; // ÇØ´ç ¸í·É ¹«½Ã
 
-        int nx = x + dx[comm];
-        int ny = y + dy[comm];
+		dice.x = nx, dice.y = ny; // ÁÖ»çÀ§ ÀÌµ¿
+		rotate_dice(dice, command);
 
-        if (!isInside(nx, ny)) // ëª…ë ¹ ë¬´ì‹œí•˜ê³ , ì¶œë ¥ë„ í•˜ì§€ ì•ŠëŠ”ë‹¤. ë°”ë¡œ ë‹¤ìŒ ëª…ë ¹ì²˜ë¦¬
-            continue;
+		if (arr[dice.x][dice.y] == 0)
+			arr[dice.x][dice.y] = dice.bot;
+		else
+		{
+			dice.bot = arr[dice.x][dice.y];
+			arr[dice.x][dice.y] = 0;
+		}
 
-        move_dice(comm); // ì£¼ì‚¬ìœ„ êµ´ë¦¼
-        x = nx, y = ny;
-
-        // í˜„ì¬ ë§µ ë°”ë‹¥ í™•ì¸í•´ì•¼í•¨
-        if (!arr[x][y])
-            arr[x][y] = d;
-
-        else
-        {
-            d = arr[x][y];
-            arr[x][y] = 0;
-        }
-        // print_dice();
-
-        cout << t << '\n';
-    }
-
-    return 0;
+		cout << dice.top << endl;
+	}
+	return 0;
 }
