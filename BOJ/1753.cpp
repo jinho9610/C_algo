@@ -1,86 +1,92 @@
-// í’€ì´ì— ì‚¬ìš©ëœ ì•Œê³ ë¦¬ì¦˜: ë‹¤ìµìŠ¤íŠ¸ë¼
+/* BOJ 1753 ÃÖ´Ü °æ·Î */
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include <functional>
-#include <algorithm>
-#include <string>
 #include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
 #include <vector>
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <string.h>
+
+#define endl '\n'
 
 using namespace std;
 
 typedef long long ll;
 
+const int INF = 1e9;
+int v, e, s, dist[20001];
+bool visited[20001];
+vector<pair<int, int>> edges[20001];
+
 struct cmp
 {
-    bool operator()(pair<int, int> p1, pair<int, int> p2)
-    {
-        return p1.first > p2.first;
-    }
+	bool operator()(pair<int, int> p1, pair<int, int> p2)
+	{
+		return p1.second > p2.second;
+	}
 };
-
-const int INF = 1e9;
-int V, E, start;
-vector<vector<pair<int, int>>> graph;
-vector<int> dist;
 
 void dijkstra(int start)
 {
-    priority_queue<pair<int, int>, vector<pair<int, int>>, cmp> pq;
+	// pq¿¡ µé¾î°¡´Â ¿ø¼Ò (a, b)´Â ½ÃÀÛÁöÁ¡->a·Î °¡´Â
+	// (ÇöÀç±îÁö ¹àÇôÁø) ÃÖ´Ü ºñ¿ëÀÌ bÀÓÀ» ÀÇ¹Ì
+	priority_queue<pair<int, int>, vector<pair<int, int>>, cmp> pq;
+	pq.push({ start, 0 });
+	dist[start] = 0;
 
-    dist[start] = 0;
-    pq.push(make_pair(0, start)); // ì–´ë–¤ ë…¸ë“œê¹Œì§€ì˜ ê±°ë¦¬ë¥¼ (ê±°ë¦¬, ë…¸ë“œë²ˆí˜¸) ìŒìœ¼ë¡œ ì‚½ì…
+	while (!pq.empty())
+	{
+		int cur = pq.top().first;
+		int distance = pq.top().second;
+		pq.pop();
 
-    while (!pq.empty()) // íê°€ ë¹Œ ë•Œê¹Œì§€
-    {
-        int distance = pq.top().first, now = pq.top().second;
-        pq.pop();
+		if (visited[cur]) // ÇöÀç ³ëµå¿¡ ´ëÇÑ ÃÖ´Ü ºñ¿ë ¿¬»êÀÌ ÀÌ¹Ì ÁøÇàµÆ´Ù¸é
+			continue;
 
-        // if (dist[now] < distance)
-        //     continue;
+		visited[cur] = true;
 
-        for (int i = 0; i < graph[now].size(); i++)
-        {
-            int cost = distance + graph[now][i].second;
-            if (cost < dist[graph[now][i].first])
-            {
-                dist[graph[now][i].first] = cost;
-                pq.push(make_pair(cost, graph[now][i].first));
-            }
-        }
-    }
+		for (auto edge : edges[cur]) // ÇöÀç ³ëµå¿Í ¿¬°áµÈ ¸ğµç °£¼± ÆÄ¾Ç
+		{
+			// (ÇöÀç °£¼± Á¤º¸¸¦ ¹ÙÅÁÀ¸·Î) cur->next·Î °¡´Â ºñ¿ëÀÌ costÀÓ
+			int next = edge.first;
+			int cost = edge.second;
+
+			if (distance + cost < dist[next])
+			{
+				dist[next] = distance + cost;
+				pq.push({ next, dist[next] });
+			}
+		}
+	}
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
 
-    cin >> V >> E >> start;
+	freopen("input.txt", "r", stdin);
 
-    graph.resize(V + 1);
-    dist.resize(V + 1, INF);
+	cin >> v >> e >> s;
+	for (int i = 0; i < e; i++)
+	{
+		int u, v, w;
+		cin >> u >> v >> w;
+		edges[u].push_back({ v,w }); // ¹æÇâ ±×·¡ÇÁ
+	}
 
-    for (int i = 0; i < E; i++)
-    {
-        int u, v, w;
-        cin >> u >> v >> w;
-        graph[u].push_back(make_pair(v, w));
-    }
+	for (int i = 1; i <= v; i++)
+		dist[i] = INF; // dist ¹è¿­ ÃÊ±âÈ­
 
-    dijkstra(start);
+	dijkstra(s);
 
-    for (int i = 1; i <= V; i++)
-    {
-        if (dist[i] == INF)
-            cout << "INF\n";
-        else
-            cout << dist[i] << '\n';
-    }
+	for (int i = 1; i <= v; i++)
+		if (dist[i] == INF)
+			cout << "INF" << endl;
+	else cout << dist[i] << endl;
 
-    return 0;
+	return 0;
 }
