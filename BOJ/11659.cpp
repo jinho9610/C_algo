@@ -1,43 +1,65 @@
-// í’€ì´ì— ì‚¬ìš©ëœ ì•Œê³ ë¦¬ì¦˜:
+/* BOJ 11659 ±¸°£ ÇÕ ±¸ÇÏ±â4 */
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include <functional>
-#include <algorithm>
-#include <string>
 #include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
 #include <vector>
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <string.h>
+
+#define endl '\n'
 
 using namespace std;
 
 typedef long long ll;
 
-int n, m, dp[100001];
+int n, m, arr[100001];
+vector<int> tree;
+
+ll make_segtree(int start, int end, int node)
+{
+	if (start == end) return tree[node] = arr[start];
+
+	int mid = (start + end) / 2;
+	return tree[node] = make_segtree(start, mid, node * 2) + make_segtree(mid + 1, end, node * 2 + 1);
+}
+
+ll query(int start, int end, int node, int left, int right)
+{
+	// ±¸ÇÏ·Á´Â ¹üÀ§°¡, ³ëµåÀÇ ±¸°£À» ¹ş¾î³ª´Â °æ¿ì
+	if (left > end || right < start) return 0;
+	
+	// ³ëµåÀÇ ±¸°£ÀÌ, ±¸ÇÏ·Á´Â ¹üÀ§¿¡ Æ÷ÇÔµÇ´Â °æ¿ì
+	if (left <= start && end <= right) return tree[node];
+
+	int mid = (start + end) / 2;
+	return query(start, mid, node * 2, left, right) + query(mid + 1, end, node * 2 + 1, left, right);
+}
+
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
 
-    cin >> n >> m;
-    for (int i = 1; i <= n; i++)
-    {
-        int a;
-        cin >> a;
-        if (i == 0)
-            dp[i] = a;
-        else
-            dp[i] = dp[i - 1] + a;
-    }
+	freopen("input.txt", "r", stdin);
 
-    for (int i = 0; i < m; i++)
-    {
-        int a, b;
-        cin >> a >> b;
-        cout << dp[b] - dp[a - 1] << '\n';
-    }
+	cin >> n >> m;
+	tree.resize(n * 4);
 
-    return 0;
+	for (int i = 1; i <= n; i++)
+		cin >> arr[i];
+
+	make_segtree(1, n, 1); // ±¸°£ÇÕ Æ®¸® »ı¼º
+
+	for (int i = 0; i < m; i++)
+	{
+		int a, b;
+		cin >> a >> b;
+		cout << query(1, n, 1, a, b) << endl;
+	}
+
+	return 0;
 }

@@ -1,102 +1,83 @@
+/* BOJ 2243 »çÅÁ »óÀÚ */
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
-#include <functional>
-#include <algorithm>
-#include <string>
 #include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
 #include <vector>
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <string.h>
+
+#define endl '\n'
 
 using namespace std;
 
 typedef long long ll;
 
-int n, a, b;
-ll c;
 const int MAX = 1000001;
+int n;
+ll arr[MAX];
+ll tree[MAX * 4];
 
-vector<ll> tree;
-
-ll makeTree(int node, int left, int right)
+ll query(int node, int start, int end, int k) // »óÀÚ ¾È¿¡¼­ k¹øÂ°·Î ¸ÀÀÖ´Â »çÅÁ Ã£±â
 {
-    if (left == right)
-    {
-        if (left <= n)
-            return tree[node] = candy[node];
-        else
-            return tree[node] = 0;
-    }
+	if (start == end) return end;
 
-    int mid = (left + right) / 2;
-    return tree[node] = makeTree(node * 2, left, mid) + makeTree(node * 2 + 1, mid + 1, right);
+	int mid = (start + end) / 2;
+	if (tree[node * 2] >= k)
+		return query(node * 2, start, mid, k);
+	else
+		return query(node * 2 + 1, mid + 1, end, k - tree[node * 2]);
 }
 
-ll query(int node, int left, int right, int target)
-{                      // ì¹´ìš´íŠ¸ë§Œì„ ì´ìš©í•´ì„œ ì‹¤ì œ ë°ì´í„°ê°€ ë¬´ì—‡ì¸ì§€ ì°¾ì„ ë•Œ ë§ì´ ì‚¬ìš©ë˜ëŠ” ë°©ì‹
-    if (left == right) // ë¦¬í”„ë…¸ë“œ ë„ë‹¬í•œ ê²½ìš°
-        return left;
-
-    else
-    {
-        int mid = (left + right) / 2;
-        if (left >= target) // ì™¼ìª½ìœ¼ë¡œ ê°€ì•¼í•˜ëŠ” ê²½ìš°
-            query(node * 2, left, mid, target);
-
-        else
-            query(node * 2 + 1, mid + 1, right, target - tree[node * 2]); // ìê¸° ì™¼ìª½ ìì‹ì˜ ê°’ë§Œí¼ì„ ë¹¼ì¤˜ì•¼í•¨
-    }
-}
-
-void update(int node, int left, int right, int idx, ll diff)
+void update(int node, int start, int end, int idx, ll value) // »óÀÚ ¼Ó »çÅÁ ÇöÈ² °»½Å
 {
-    if (left <= idx && idx <= right)
-    {
-        tree[node] += diff;
-        if (left != right)
-        {
-            int mid = (left + right) / 2;
-            update(node, left, mid, idx, diff);
-            update(node, mid + 1, right, idx, diff);
-        }
-    }
+	if (idx < start || idx > end) return;
+	if (start == end)
+	{
+		tree[node] = value;
+		return;
+	}
+
+	int mid = (start + end) / 2;
+	update(node * 2, start, mid, idx, value);
+	update(node * 2 + 1, mid + 1, end, idx, value);
+	tree[node] = tree[node * 2] + tree[node * 2 + 1];
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
 
-    cin >> n;
+	freopen("input.txt", "r", stdin);
 
-    int s = 1;
-    while (s < MAX)
-        s *= 2;
-    tree.resize(s * 2, 0);
-    makeTree(1, 1, s);
+	cin >> n;
 
-    vector<ll> ans;
-    for (int i = 0; i < n; i++)
-    {
-        cin >> a;
+	ll a, b, c;
+	for (int i = 0; i < n; i++)
+	{
+		cin >> a;
+		if (a == 1) // »çÅÁ ²¨³»±â
+		{
+			cin >> b;
+			// b¹øÂ° »çÅÁÀ» ²¨³ÂÀ» ¶§, ÇØ´ç »çÅÁÀÇ ¸ÀÀ» k¶ó°íÇÔ
+			int k = query(1, 1, MAX, b);
+			cout << k << endl;
+			// ÇÏ³ª ²¨³ÂÀ¸´Ï ¼¼±×Æ®¸® ¾÷µ¥ÀÌÆ®
+			update(1, 1, MAX, k, arr[k] - 1);
+			arr[k]--;
+		}
+		else // »çÅÁ ³Ö°Å³ª ¹ö¸®±â
+		{
+			cin >> b >> c;
+			// b¶ó´Â ¸ÀÀÇ »çÅÁÀ»
+			update(1, 1, MAX, b, arr[b] + c);
+			arr[b] += c; // c°³ ³Ö±â ¶Ç´Â »©±â
+		}
+	}
 
-        if (a == 1)
-        {
-            cin >> b;
-            ll flavor = query(1, 0, MAX - 1, b);
-            ans.push_back(flavor);
-            update(1, 0, MAX - 1, flavor, -1);
-        }
-        else
-        {
-            cin >> b >> c;
-            update(1, 0, MAX - 1, b, c);
-        }
-    }
-
-    for (int i = 0; i < ans.size(); i++)
-        cout << ans[i] << '\n';
-
-    return 0;
+	return 0;
 }
