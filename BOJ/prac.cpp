@@ -1,20 +1,17 @@
-#include <set>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 
 using namespace std;
 
 int main()
 {
-    set<vector<int>> s;
-    s.insert({1, 2, 3});
+    vector<int> v = {1, 3, 5, 7, 9};
 
-    for (auto i : s)
-    {
-        for (auto a : i)
-            cout << a << ' ';
-        cout << '\n';
-    }
+    auto it = upper_bound(v.begin(), v.end(), 2);
+
+    //cout << distance(v.begin(), it) << endl;
+    cout << *it << endl;
 
     return 0;
 }

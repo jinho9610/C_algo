@@ -1,5 +1,4 @@
-// 풀이에 사용된 알고리즘:
-
+/* */
 #include <iostream>
 #include <functional>
 #include <algorithm>

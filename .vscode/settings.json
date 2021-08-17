@@ -16,6 +16,8 @@
         "xlocale": "cpp",
         "ios": "cpp",
         "set": "cpp",
-        "deque": "cpp"
+        "deque": "cpp",
+        "cmath": "cpp",
+        "xutility": "cpp"
     }
 }
