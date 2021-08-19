@@ -18,6 +18,7 @@
         "set": "cpp",
         "deque": "cpp",
         "cmath": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "algorithm": "cpp"
     }
 }
