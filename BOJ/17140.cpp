@@ -1,4 +1,4 @@
-// 풀이에 사용된 알고리즘:
+/* BOJ 17140 이차원 배열과 연산 */
 
 #include <iostream>
 #include <functional>
@@ -106,6 +106,12 @@ int main()
             cin >> arr[i][j];
 
     int sec = 0;
+    if (arr[r][c] == k)
+    {
+        cout << 0 << endl;
+        return 0;
+    }
+
     while (true)
     {
         sec += 1; // 1초 지날 때 마다 r 또는 c 연산
