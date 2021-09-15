@@ -1,60 +1,18 @@
-#include <string>
-#include <vector>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
-int solution(string s)
-{
-    int answer = 0;
-
-    for (int ul = 1; ul <= s.length(); ++ul) // ´ÜÀ§
-    {
-        if (s.length() % ul != 0)
-            continue;
-
-        string ans = "";
-        for (int i = 0; i <= s.length(); i += ul)
-        {
-            int a = i, b = i + ul;
-            string token;
-            token = s.substr(a, b);
-            cout << "i: " << a << "\ti + ul: " << b << "\tul: " << ul << "\ttoken: " << token << endl;
-
-            int cnt = 1;
-
-            for (int j = i + ul; j <= s.length(); j += ul)
-            {
-                if (token == s.substr(j, j + ul))
-                {
-                    i = j + ul;
-                    cnt++;
-                }
-
-                else
-                    break;
-            }
-
-            cout << "cnt: " << cnt << endl;
-
-            if (cnt == 1)
-                ans += token;
-            else
-                ans = ans + to_string(cnt) + token;
-        }
-        cout << "´ÜÀ§ ±æÀÌ: " << ul << " - ¾ÐÃà °á°ú: " << ans << endl;
-    }
-
-    return answer;
-}
-
 int main()
 {
-    //freopen("input.txt", "r", stdin);
-    string a;
-    cin >> a;
-    //cout << solution(a) << endl;
-    cout << a.substr(1, 2) << endl;
-    cout << a.substr(2, 3) << endl;
-    cout << a.substr(3, 4) << endl;
+    stringstream ss("ì•ˆë…• í•˜ ì„¸ ìš”");
+    //stringstream ss("hey who am i");
+    string token;
+    // while (getline(ss, token, 't'))
+    //     cout << token << endl;
+    while (ss >> token)
+        cout << token << endl;
+
+    return 0;
 }

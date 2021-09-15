@@ -19,6 +19,7 @@
         "deque": "cpp",
         "cmath": "cpp",
         "xutility": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "string": "cpp"
     }
 }
