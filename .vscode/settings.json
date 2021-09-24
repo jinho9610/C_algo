@@ -20,6 +20,7 @@
         "cmath": "cpp",
         "xutility": "cpp",
         "algorithm": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "xhash": "cpp"
     }
 }
