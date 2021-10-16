@@ -1,28 +1,19 @@
-// 풀이에 사용된 알고리즘: kruscal
-
+/* BOJ 1647 도시 분할 계획 */
 #include <iostream>
-#include <functional>
-#include <algorithm>
-#include <string>
-#include <queue>
-#include <stack>
-#include <cmath>
-#include <string.h>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-typedef long long ll;
-
-int n, m, pr[100001];
-vector<pair<int, pair<int, int>>> edges;
+int p[100001], n, m;
+vector<pair<pair<int, int>, int>> edges;
 
 int find_parent(int x)
 {
-    if (pr[x] == x)
+    if (x == p[x])
         return x;
 
-    return pr[x] = find_parent(pr[x]);
+    return p[x] = find_parent(p[x]);
 }
 
 void union_parent(int a, int b)
@@ -30,51 +21,48 @@ void union_parent(int a, int b)
     a = find_parent(a);
     b = find_parent(b);
 
-    pr[a] = b;
-}
-
-bool cmp(pair<int, pair<int, int>> p1, pair<int, pair<int, int>> p2)
-{
-    return p1.second.second < p2.second.second;
+    if (a < b)
+        p[b] = a;
+    else
+        p[a] = b;
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
     cin >> n >> m;
 
-    // pr 배열 초기화
-    for (int i = 1; i <= n; i++)
-        pr[i] = i;
+    edges.resize(n + 1);
 
-    for (int i = 0; i < m; i++)
+    for (int i = 1; i <= n; i++)
+        p[i] = i;
+
+    while (m--)
     {
         int a, b, c;
         cin >> a >> b >> c;
-        edges.push_back(make_pair(a, make_pair(b, c)));
+        edges.push_back({{a, b}, c});
     }
 
-    sort(edges.begin(), edges.end(), cmp); // 비용 기준으로 오름차순 정렬 for MST
+    sort(edges.begin(), edges.end(), [](pair<pair<int, int>, int> p1, pair<pair<int, int>, int> p2) -> bool
+         { return p1.second < p2.second; });
 
-    vector<int> elems;
-    ll result = 0;
-    for (int i = 0; i < edges.size(); i++)
+    int Max_len = 0, sum = 0;
+    for (auto edge : edges)
     {
-        pair<int, pair<int, int>> edge = edges[i];
-        int a = edge.first, b = edge.second.first, c = edge.second.second;
+        int a = edge.first.first;
+        int b = edge.first.second;
+        int pa = find_parent(a), pb = find_parent(b);
 
-        if (find_parent(a) != find_parent(b))
-        {
-            union_parent(a, b);
-            result += c;
-            elems.push_back(c);
-        }
+        if (pa == pb)
+            continue;
+
+        union_parent(a, b);
+
+        sum += edge.second;
+        Max_len = max(Max_len, edge.second);
     }
 
-    cout << result - elems.back() << endl;
+    cout << sum - Max_len << endl;
 
     return 0;
 }
